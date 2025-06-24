@@ -35,8 +35,38 @@ Based on the dev container configuration, this project is designed as:
 - **Biome**: Configured for linting and formatting
 - **Prisma**: Database ORM and migrations
 
+## Development Commands
+
+### Frontend (Next.js 15)
+```bash
+cd frontend
+npm run dev          # Start development server (port 3000)
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run type-check   # TypeScript type checking
+```
+
+### Backend (Express + TypeScript)
+```bash
+cd backend
+npm run dev          # Start development server with hot reload (port 3001)
+npm run build        # Build TypeScript to JavaScript
+npm run start        # Start production server
+npm run type-check   # TypeScript type checking
+npm run lint         # Run Biome linter
+npm run db:generate  # Generate Prisma client
+npm run db:push      # Push schema to database
+npm run db:migrate   # Run database migrations
+npm run db:studio    # Open Prisma Studio
+```
+
 ## Current Status
-The project currently contains only infrastructure setup. Application code (frontend/backend directories and package.json files) needs to be created when implementing features.
+Environment setup completed with:
+- Next.js 15 frontend with Tailwind CSS
+- Express backend with TypeScript
+- Prisma ORM with PostgreSQL schema
+- Development containers and tooling configured
 
 ## Environment Variables
 - `DATABASE_URL`: PostgreSQL connection string

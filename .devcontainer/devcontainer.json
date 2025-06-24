@@ -27,8 +27,7 @@
       5432  // PostgreSQL 
     ],
   
-    // 一旦コメントアウト
-    // "postCreateCommand": "cd backend && npm install && cd ../frontend && npm install",
+    "postCreateCommand": "cd backend && npm install && cd ../frontend && npm install",
   
     "remoteUser": "vscode"
   }

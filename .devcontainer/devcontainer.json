@@ -1,0 +1,34 @@
+// .devcontainer/devcontainer.json
+{
+    "name": "ai-discussion",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspace",
+  
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "biomejs.biome",
+          "prisma.prisma"
+        ]
+      }
+    },
+  
+    "features": {
+      "ghcr.io/devcontainers/features/node:1": {
+        "version": "24"
+      },
+      "ghcr.io/devcontainers/features/git:1.3.3": {}
+    },
+  
+    "forwardPorts": [
+      3000, // Next.js
+      3001, // React Router
+      5432  // PostgreSQL 
+    ],
+  
+    // 一旦コメントアウト
+    // "postCreateCommand": "cd backend && npm install && cd ../frontend && npm install",
+  
+    "remoteUser": "vscode"
+  }

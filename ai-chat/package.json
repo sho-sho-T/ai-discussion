@@ -14,7 +14,10 @@
     "check:write": "biome check --write ./"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "ai": "^4.3.16",
     "next": "15.3.4",
+    "openai": "^5.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

@@ -1,103 +1,205 @@
-import Image from "next/image"
+'use client'
+
+import { useState } from 'react'
+import { agents } from './agents'
+import { Agent, Message, ChatSession } from './_types'
+import AgentCard from './_components/AgentCard'
+import MessageBubble from './_components/MessageBubble'
 
 export default function Home() {
-  return (
-    <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-      <main className="row-start-2 flex flex-col items-center gap-[32px] sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-center font-[family-name:var(--font-geist-mono)] text-sm/6 sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="rounded bg-black/[.05] px-1 py-0.5 font-[family-name:var(--font-geist-mono)] font-semibold dark:bg-white/[.06]">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [selectedAgents, setSelectedAgents] = useState<Agent[]>([])
+  const [question, setQuestion] = useState('')
+  const [chatSession, setChatSession] = useState<ChatSession | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
-        <div className="flex flex-col items-center gap-4 sm:flex-row">
-          <a
-            className="flex h-10 items-center justify-center gap-2 rounded-full border border-transparent border-solid bg-foreground px-4 font-medium text-background text-sm transition-colors hover:bg-[#383838] sm:h-12 sm:w-auto sm:px-5 sm:text-base dark:hover:bg-[#ccc]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="flex h-10 w-full items-center justify-center rounded-full border border-black/[.08] border-solid px-4 font-medium text-sm transition-colors hover:border-transparent hover:bg-[#f2f2f2] sm:h-12 sm:w-auto sm:px-5 sm:text-base md:w-[158px] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex flex-wrap items-center justify-center gap-[24px]">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  const handleAgentSelect = (agent: Agent) => {
+    setSelectedAgents(prev => {
+      const isSelected = prev.some(a => a.id === agent.id)
+      if (isSelected) {
+        return prev.filter(a => a.id !== agent.id)
+      } else if (prev.length < 3) {
+        return [...prev, agent]
+      }
+      return prev
+    })
+  }
+
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }
+
+  const startDiscussion = async () => {
+    if (!question.trim() || selectedAgents.length === 0) return
+
+    setIsLoading(true)
+    const session: ChatSession = {
+      id: Date.now().toString(),
+      question,
+      selectedAgents,
+      messages: [],
+      status: 'discussing',
+      currentRound: 1,
+      maxRounds: 3
+    }
+    setChatSession(session)
+
+    for (let round = 1; round <= 3; round++) {
+      const shuffledAgents = shuffleArray(selectedAgents)
+      
+      for (const agent of shuffledAgents) {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              question: session.question,
+              selectedAgentIds: [agent.id],
+              messages: session.messages,
+              round,
+              useMockData: true
+            })
+          })
+
+          const data = await response.json()
+          
+          if (data.success && data.data.responses[0]) {
+            const newMessage: Message = {
+              id: Date.now().toString(),
+              agentId: agent.id,
+              content: data.data.responses[0].content,
+              timestamp: new Date(),
+              round
+            }
+            
+            setChatSession(prev => prev ? {
+              ...prev,
+              messages: [...prev.messages, newMessage],
+              currentRound: round
+            } : null)
+          }
+        } catch (error) {
+          console.error('Discussion error:', error)
+        }
+      }
+    }
+
+    setChatSession(prev => prev ? { ...prev, status: 'completed' } : null)
+    setIsLoading(false)
+  }
+
+  const resetChat = () => {
+    setChatSession(null)
+    setQuestion('')
+    setSelectedAgents([])
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-4xl mx-auto">
+        <header className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Team Chat</h1>
+          <p className="text-gray-600">複数のAIエージェントが協働してあなたの質問に答えます</p>
+        </header>
+
+        {!chatSession ? (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                質問を入力してください
+              </label>
+              <textarea
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows={3}
+                placeholder="AIエージェントに相談したいことを入力してください..."
+              />
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                エージェントを選択してください（1-3体）
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {agents.map(agent => (
+                  <AgentCard
+                    key={agent.id}
+                    agent={agent}
+                    isSelected={selectedAgents.some(a => a.id === agent.id)}
+                    onSelect={handleAgentSelect}
+                  />
+                ))}
+              </div>
+              <p className="text-sm text-gray-500 mt-2">
+                選択済み: {selectedAgents.length}/3
+              </p>
+            </div>
+
+            <button
+              onClick={startDiscussion}
+              disabled={!question.trim() || selectedAgents.length === 0 || isLoading}
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
+            >
+              {isLoading ? 'ディスカッション開始中...' : 'ディスカッションを開始'}
+            </button>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="mb-6 pb-4 border-b">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                質問: {chatSession.question}
+              </h2>
+              <div className="flex items-center justify-between">
+                <div className="flex space-x-2">
+                  {chatSession.selectedAgents.map(agent => (
+                    <span key={agent.id} className={`px-2 py-1 rounded-full text-xs font-medium ${agent.color}`}>
+                      {agent.name}
+                    </span>
+                  ))}
+                </div>
+                <span className="text-sm text-gray-500">
+                  Round {chatSession.currentRound}/3
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
+              {chatSession.messages.map(message => (
+                <MessageBubble key={message.id} message={message} />
+              ))}
+              {isLoading && (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  <span className="ml-2 text-gray-600">議論中...</span>
+                </div>
+              )}
+            </div>
+
+            {chatSession.status === 'completed' && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                <h3 className="font-semibold text-green-800 mb-2">ディスカッション完了！</h3>
+                <p className="text-green-700 text-sm">
+                  3ラウンドのディスカッションが完了しました。上記の議論を参考にしてください。
+                </p>
+              </div>
+            )}
+
+            <button
+              onClick={resetChat}
+              className="w-full bg-gray-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+            >
+              新しい質問をする
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

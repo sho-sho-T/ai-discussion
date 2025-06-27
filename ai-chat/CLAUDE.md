@@ -16,18 +16,17 @@
 ## プロジェクト構造
 
 ```
-src/
-├── app/
-│   ├── layout.tsx
-│   ├── page.tsx
-│   ├── globals.css
-│   └── api/chat/route.ts
-├── components/
-├── lib/
-│   ├── agents.ts
-│   ├── gemini.ts
-│   └── mockData.ts
-└── types/index.ts
+ app/
+    ├── layout.tsx
+    ├── page.tsx
+    ├── globals.css
+    └── api/chat/route.ts
+    ├── _components/
+    ├── _lib/
+    ├── agents.ts
+    ├── gemini.ts
+    └── mockData.ts
+    └── _types/index.ts
 ```
 
 ## 環境変数

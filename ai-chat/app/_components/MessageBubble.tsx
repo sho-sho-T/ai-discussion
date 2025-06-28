@@ -1,17 +1,17 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Message } from '../_types';
-import { agents } from '../agents';
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import type { Message } from "../_types"
+import { agents } from "../agents"
 
 interface MessageBubbleProps {
-  message: Message;
+  message: Message
 }
 
 const MessageBubble = ({ message }: MessageBubbleProps) => {
-  const agent = agents.find(a => a.id === message.agentId);
-  
-  if (!agent) return null;
+  const agent = agents.find(a => a.id === message.agentId)
+
+  if (!agent) return null
 
   return (
     <div className="flex items-start space-x-3 mb-4">
@@ -41,7 +41,7 @@ const MessageBubble = ({ message }: MessageBubbleProps) => {
         </Card>
       </div>
     </div>
-  );
+  )
 }
 
-export default MessageBubble;
+export default MessageBubble

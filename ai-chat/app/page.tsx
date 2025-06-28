@@ -1,17 +1,23 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { agents } from './agents'
-import { Agent, Message, ChatSession } from './_types'
-import AgentCard from './_components/AgentCard'
-import MessageBubble from './_components/MessageBubble'
+import { useState } from "react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import AgentCard from "./_components/AgentCard"
+import MessageBubble from "./_components/MessageBubble"
+import type { Agent, ChatSession, Message } from "./_types"
+import { agents } from "./agents"
 
 const Home = () => {
   const [selectedAgents, setSelectedAgents] = useState<Agent[]>([])
-  const [question, setQuestion] = useState('')
+  const [question, setQuestion] = useState("")
   const [chatSession, setChatSession] = useState<ChatSession | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -20,7 +26,8 @@ const Home = () => {
       const isSelected = prev.some(a => a.id === agent.id)
       if (isSelected) {
         return prev.filter(a => a.id !== agent.id)
-      } else if (prev.length < 3) {
+      }
+      if (prev.length < 3) {
         return [...prev, agent]
       }
       return prev
@@ -45,63 +52,67 @@ const Home = () => {
       question,
       selectedAgents,
       messages: [],
-      status: 'discussing',
+      status: "discussing",
       currentRound: 1,
-      maxRounds: 3
+      maxRounds: 3,
     }
     setChatSession(session)
 
     for (let round = 1; round <= 3; round++) {
       const shuffledAgents = shuffleArray(selectedAgents)
-      
+
       for (const agent of shuffledAgents) {
         await new Promise(resolve => setTimeout(resolve, 1000))
-        
+
         try {
-          const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+          const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               question: session.question,
               selectedAgentIds: [agent.id],
               messages: session.messages,
               round,
               useMockData: true,
-              generateSummary: round === 3
-            })
+              generateSummary: round === 3,
+            }),
           })
 
           const data = await response.json()
-          
+
           if (data.success && data.data.responses[0]) {
             const newMessage: Message = {
               id: Date.now().toString(),
               agentId: agent.id,
               content: data.data.responses[0].content,
               timestamp: new Date(),
-              round
+              round,
             }
-            
-            setChatSession(prev => prev ? {
-              ...prev,
-              messages: [...prev.messages, newMessage],
-              currentRound: round,
-              finalSummary: data.data.finalSummary || prev.finalSummary
-            } : null)
+
+            setChatSession(prev =>
+              prev
+                ? {
+                    ...prev,
+                    messages: [...prev.messages, newMessage],
+                    currentRound: round,
+                    finalSummary: data.data.finalSummary || prev.finalSummary,
+                  }
+                : null
+            )
           }
         } catch (error) {
-          console.error('Discussion error:', error)
+          console.error("Discussion error:", error)
         }
       }
     }
 
-    setChatSession(prev => prev ? { ...prev, status: 'completed' } : null)
+    setChatSession(prev => (prev ? { ...prev, status: "completed" } : null))
     setIsLoading(false)
   }
 
   const resetChat = () => {
     setChatSession(null)
-    setQuestion('')
+    setQuestion("")
     setSelectedAgents([])
   }
 
@@ -109,8 +120,12 @@ const Home = () => {
     <div className="min-h-screen bg-background p-4">
       <div className="max-w-4xl mx-auto">
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4">AI Team Chat</h1>
-          <p className="text-muted-foreground text-lg">複数のAIエージェントが協働してあなたの質問に答えます</p>
+          <h1 className="text-4xl font-bold text-foreground mb-4">
+            AI Team Chat
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            複数のAIエージェントが協働してあなたの質問に答えます
+          </p>
         </header>
 
         {!chatSession ? (
@@ -128,7 +143,7 @@ const Home = () => {
                 </label>
                 <textarea
                   value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
+                  onChange={e => setQuestion(e.target.value)}
                   className="w-full p-4 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                   rows={3}
                   placeholder="AIエージェントに相談したいことを入力してください..."
@@ -156,11 +171,15 @@ const Home = () => {
 
               <Button
                 onClick={startDiscussion}
-                disabled={!question.trim() || selectedAgents.length === 0 || isLoading}
+                disabled={
+                  !question.trim() || selectedAgents.length === 0 || isLoading
+                }
                 className="w-full"
                 size="lg"
               >
-                {isLoading ? 'ディスカッション開始中...' : 'ディスカッションを開始'}
+                {isLoading
+                  ? "ディスカッション開始中..."
+                  : "ディスカッションを開始"}
               </Button>
             </CardContent>
           </Card>
@@ -173,7 +192,11 @@ const Home = () => {
               <div className="flex items-center justify-between">
                 <div className="flex gap-2">
                   {chatSession.selectedAgents.map(agent => (
-                    <Badge key={agent.id} variant="secondary" className={agent.color}>
+                    <Badge
+                      key={agent.id}
+                      variant="secondary"
+                      className={agent.color}
+                    >
                       {agent.name}
                     </Badge>
                   ))}
@@ -191,20 +214,30 @@ const Home = () => {
                 ))}
                 {isLoading && (
                   <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    <span className="ml-3 text-muted-foreground">議論中...</span>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                    <span className="ml-3 text-muted-foreground">
+                      議論中...
+                    </span>
                   </div>
                 )}
               </div>
 
-              {chatSession.status === 'completed' && (
+              {chatSession.status === "completed" && (
                 <div className="space-y-4">
                   {chatSession.finalSummary && (
                     <Card className="bg-primary/5 border-primary/20">
                       <CardHeader className="pb-4">
                         <CardTitle className="text-primary flex items-center gap-2">
-                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          <svg
+                            className="w-5 h-5"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                           総括回答
                         </CardTitle>
@@ -218,7 +251,9 @@ const Home = () => {
                   )}
                   <Card className="bg-green-50 border-green-200">
                     <CardContent className="pt-6">
-                      <h3 className="font-semibold text-green-800 mb-2">ディスカッション完了！</h3>
+                      <h3 className="font-semibold text-green-800 mb-2">
+                        ディスカッション完了！
+                      </h3>
                       <p className="text-green-700 text-sm">
                         3ラウンドのディスカッションが完了しました。上記の議論を参考にしてください。
                       </p>
@@ -243,4 +278,4 @@ const Home = () => {
   )
 }
 
-export default Home;
+export default Home

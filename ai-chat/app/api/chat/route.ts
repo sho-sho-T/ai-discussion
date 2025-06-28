@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateAgentResponse, generateFinalConclusion } from '../../gemini';
 import { agents } from '../../agents';
-import { generateMockResponse } from '../../mockData';
+import { generateMockResponse, generateMockSummary } from '../../mockData';
 
 export async function POST(request: NextRequest) {
   try {
-    const { question, selectedAgentIds, messages, round, useMockData } = await request.json();
+    const { question, selectedAgentIds, messages, round, useMockData, generateSummary } = await request.json();
 
     if (!question || !selectedAgentIds || !Array.isArray(selectedAgentIds)) {
       return NextResponse.json(
@@ -31,12 +31,18 @@ export async function POST(request: NextRequest) {
         timestamp: new Date().toISOString()
       }));
 
+      let finalSummary = null;
+      if (generateSummary && round >= 3) {
+        finalSummary = generateMockSummary(question, messages || []);
+      }
+
       return NextResponse.json({
         success: true,
         data: {
           responses,
           round,
-          isComplete: round >= 3
+          isComplete: round >= 3,
+          finalSummary
         }
       });
     }
@@ -64,12 +70,23 @@ export async function POST(request: NextRequest) {
       })
     );
 
+    let finalSummary = null;
+    if (generateSummary && round >= 3) {
+      const allMessages = messages?.map((m: any) => `${agents.find(a => a.id === m.agentId)?.name || 'Agent'}: ${m.content}`) || [];
+      try {
+        finalSummary = await generateFinalConclusion(question, allMessages);
+      } catch (error) {
+        console.error('Failed to generate summary:', error);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: {
         responses,
         round,
-        isComplete: round >= 3
+        isComplete: round >= 3,
+        finalSummary
       }
     });
 

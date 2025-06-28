@@ -22,6 +22,7 @@ export interface ChatSession {
   status: 'idle' | 'discussing' | 'completed';
   currentRound: number;
   maxRounds: number;
+  finalSummary?: string;
 }
 
 export interface ApiResponse {

@@ -1,6 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { agents } from './agents'
 import { Agent, Message, ChatSession } from './_types'
 import AgentCard from './_components/AgentCard'
@@ -103,118 +106,137 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-4xl mx-auto">
         <header className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Team Chat</h1>
-          <p className="text-gray-600">複数のAIエージェントが協働してあなたの質問に答えます</p>
+          <h1 className="text-4xl font-bold text-foreground mb-4">AI Team Chat</h1>
+          <p className="text-muted-foreground text-lg">複数のAIエージェントが協働してあなたの質問に答えます</p>
         </header>
 
         {!chatSession ? (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                質問を入力してください
-              </label>
-              <textarea
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows={3}
-                placeholder="AIエージェントに相談したいことを入力してください..."
-              />
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                エージェントを選択してください（1-3体）
-              </label>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {agents.map(agent => (
-                  <AgentCard
-                    key={agent.id}
-                    agent={agent}
-                    isSelected={selectedAgents.some(a => a.id === agent.id)}
-                    onSelect={handleAgentSelect}
-                  />
-                ))}
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle>新しいディスカッション</CardTitle>
+              <CardDescription>
+                質問を入力し、協働するAIエージェントを選択してください
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  質問を入力してください
+                </label>
+                <textarea
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  className="w-full p-4 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  rows={3}
+                  placeholder="AIエージェントに相談したいことを入力してください..."
+                />
               </div>
-              <p className="text-sm text-gray-500 mt-2">
-                選択済み: {selectedAgents.length}/3
-              </p>
-            </div>
 
-            <button
-              onClick={startDiscussion}
-              disabled={!question.trim() || selectedAgents.length === 0 || isLoading}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
-            >
-              {isLoading ? 'ディスカッション開始中...' : 'ディスカッションを開始'}
-            </button>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="mb-6 pb-4 border-b">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                質問: {chatSession.question}
-              </h2>
-              <div className="flex items-center justify-between">
-                <div className="flex space-x-2">
-                  {chatSession.selectedAgents.map(agent => (
-                    <span key={agent.id} className={`px-2 py-1 rounded-full text-xs font-medium ${agent.color}`}>
-                      {agent.name}
-                    </span>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-3">
+                  エージェントを選択してください（1-3体）
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {agents.map(agent => (
+                    <AgentCard
+                      key={agent.id}
+                      agent={agent}
+                      isSelected={selectedAgents.some(a => a.id === agent.id)}
+                      onSelect={handleAgentSelect}
+                    />
                   ))}
                 </div>
-                <span className="text-sm text-gray-500">
-                  Round {chatSession.currentRound}/3
-                </span>
+                <p className="text-sm text-muted-foreground mt-3">
+                  選択済み: {selectedAgents.length}/3
+                </p>
               </div>
-            </div>
 
-            <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
-              {chatSession.messages.map(message => (
-                <MessageBubble key={message.id} message={message} />
-              ))}
-              {isLoading && (
-                <div className="flex items-center justify-center py-4">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                  <span className="ml-2 text-gray-600">議論中...</span>
+              <Button
+                onClick={startDiscussion}
+                disabled={!question.trim() || selectedAgents.length === 0 || isLoading}
+                className="w-full"
+                size="lg"
+              >
+                {isLoading ? 'ディスカッション開始中...' : 'ディスカッションを開始'}
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-lg">
+                質問: {chatSession.question}
+              </CardTitle>
+              <div className="flex items-center justify-between">
+                <div className="flex gap-2">
+                  {chatSession.selectedAgents.map(agent => (
+                    <Badge key={agent.id} variant="secondary" className={agent.color}>
+                      {agent.name}
+                    </Badge>
+                  ))}
                 </div>
-              )}
-            </div>
+                <Badge variant="outline">
+                  Round {chatSession.currentRound}/3
+                </Badge>
+              </div>
+            </CardHeader>
 
-            {chatSession.status === 'completed' && (
-              <div className="space-y-4">
-                {chatSession.finalSummary && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-blue-800 mb-2 flex items-center">
-                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                      総括回答
-                    </h3>
-                    <p className="text-blue-800 whitespace-pre-line leading-relaxed">
-                      {chatSession.finalSummary}
-                    </p>
+            <CardContent className="space-y-6">
+              <div className="space-y-4 max-h-96 overflow-y-auto">
+                {chatSession.messages.map(message => (
+                  <MessageBubble key={message.id} message={message} />
+                ))}
+                {isLoading && (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <span className="ml-3 text-muted-foreground">議論中...</span>
                   </div>
                 )}
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-green-800 mb-2">ディスカッション完了！</h3>
-                  <p className="text-green-700 text-sm">
-                    3ラウンドのディスカッションが完了しました。上記の議論を参考にしてください。
-                  </p>
-                </div>
               </div>
-            )}
 
-            <button
-              onClick={resetChat}
-              className="w-full bg-gray-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-700 transition-colors"
-            >
-              新しい質問をする
-            </button>
-          </div>
+              {chatSession.status === 'completed' && (
+                <div className="space-y-4">
+                  {chatSession.finalSummary && (
+                    <Card className="bg-primary/5 border-primary/20">
+                      <CardHeader className="pb-4">
+                        <CardTitle className="text-primary flex items-center gap-2">
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
+                          総括回答
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-primary whitespace-pre-line leading-relaxed">
+                          {chatSession.finalSummary}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                  <Card className="bg-green-50 border-green-200">
+                    <CardContent className="pt-6">
+                      <h3 className="font-semibold text-green-800 mb-2">ディスカッション完了！</h3>
+                      <p className="text-green-700 text-sm">
+                        3ラウンドのディスカッションが完了しました。上記の議論を参考にしてください。
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              <Button
+                onClick={resetChat}
+                variant="secondary"
+                className="w-full"
+                size="lg"
+              >
+                新しい質問をする
+              </Button>
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>

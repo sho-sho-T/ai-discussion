@@ -188,3 +188,13 @@ export const generateMockResponse = (agentId: string, question: string): string 
   const agentResponses = responses[agentId] || ['興味深い質問ですね。'];
   return agentResponses[Math.floor(Math.random() * agentResponses.length)];
 };
+
+export function generateMockSummary(question: string, messages: any[]): string {
+  const summaries = [
+    `「${question}」について議論した結果、多角的な視点から検討することが重要であることが分かりました。技術的な実装、ユーザー体験、コスト、リスクなどを総合的に判断し、段階的なアプローチで進めることをお勧めします。`,
+    `各エージェントの議論を総合すると、「${question}」に対する答えは一つではありません。様々な観点を考慮し、バランスの取れた解決策を見つけることが大切です。まずは小さく始めて、徐々に改善していく方針が良いでしょう。`,
+    `「${question}」についての議論を通じて、問題の複雑さと解決策の多様性が明らかになりました。リスクを適切に管理しながら、ユーザーのニーズに応える実用的なアプローチを取ることが成功の鍵となります。`
+  ];
+  
+  return summaries[Math.floor(Math.random() * summaries.length)];
+};

@@ -5,7 +5,7 @@ interface MessageBubbleProps {
   message: Message;
 }
 
-export default function MessageBubble({ message }: MessageBubbleProps) {
+const MessageBubble = ({ message }: MessageBubbleProps) => {
   const agent = agents.find(a => a.id === message.agentId);
   
   if (!agent) return null;
@@ -27,3 +27,5 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     </div>
   );
 }
+
+export default MessageBubble;

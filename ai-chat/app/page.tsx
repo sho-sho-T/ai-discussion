@@ -6,7 +6,7 @@ import { Agent, Message, ChatSession } from './_types'
 import AgentCard from './_components/AgentCard'
 import MessageBubble from './_components/MessageBubble'
 
-export default function Home() {
+const Home = () => {
   const [selectedAgents, setSelectedAgents] = useState<Agent[]>([])
   const [question, setQuestion] = useState('')
   const [chatSession, setChatSession] = useState<ChatSession | null>(null)
@@ -220,3 +220,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default Home;

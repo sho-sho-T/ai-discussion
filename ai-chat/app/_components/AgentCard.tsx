@@ -6,7 +6,7 @@ interface AgentCardProps {
   onSelect: (agent: Agent) => void;
 }
 
-export default function AgentCard({ agent, isSelected, onSelect }: AgentCardProps) {
+const AgentCard = ({ agent, isSelected, onSelect }: AgentCardProps) => {
   return (
     <div
       className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
@@ -31,3 +31,5 @@ export default function AgentCard({ agent, isSelected, onSelect }: AgentCardProp
     </div>
   );
 }
+
+export default AgentCard;

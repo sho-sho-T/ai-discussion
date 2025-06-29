@@ -3,7 +3,10 @@
     "allow": [
       "Bash(git add:*)",
       "Bash(git config:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:mastra.ai)",
+      "Bash(npm run check:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": []
   }

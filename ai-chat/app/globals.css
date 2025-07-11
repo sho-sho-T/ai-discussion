@@ -6,8 +6,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -112,11 +111,95 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+/* GSAP Animation Classes */
+.gsap-fade-in {
+  opacity: 0;
+}
+
+.gsap-slide-up {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.gsap-scale-in {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.gsap-stagger {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: 'Noto Sans JP', sans-serif;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground font-sans bg-gradient-to-br from-sky-50 to-violet-50 min-h-screen;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
   }
+}
+
+@layer components {
+  .glass-morphism {
+    @apply bg-white/25 backdrop-blur-lg border border-white/30 rounded-3xl shadow-2xl;
+  }
+  
+  .agent-card-glass {
+    @apply bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-lg shadow-lg border border-white/50 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl;
+  }
+  
+  .chat-input-glass {
+    @apply bg-white/95 border-2 border-transparent rounded-3xl shadow-lg relative overflow-hidden;
+  }
+  
+  .floating-orb {
+    @apply absolute rounded-full pointer-events-none;
+    background: radial-gradient(circle, rgba(147, 197, 253, 0.4) 0%, rgba(196, 181, 253, 0.2) 100%);
+    filter: blur(40px);
+  }
+  
+  .pulse-dot {
+    @apply inline-block w-2 h-2 rounded-full bg-blue-400;
+  }
+  
+  .tag-badge {
+    @apply inline-block px-3 py-1 rounded-xl text-xs font-medium shadow-md;
+    background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 100%);
+    color: #92400e;
+  }
+  
+  .radio-custom {
+    @apply w-5 h-5 border-2 border-violet-200 rounded-full appearance-none cursor-pointer transition-all duration-300 relative;
+  }
+  
+  .radio-custom:checked {
+    @apply border-blue-400 bg-blue-400;
+  }
+  
+  .radio-custom:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+  }
+}
+
+@layer utilities {
+  .animate-shimmer {
+    animation: shimmer 3s infinite;
+  }
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(200%); }
 }

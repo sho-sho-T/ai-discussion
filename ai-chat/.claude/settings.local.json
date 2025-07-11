@@ -6,7 +6,10 @@
       "Bash(git commit:*)",
       "WebFetch(domain:mastra.ai)",
       "Bash(npm run check:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "WebFetch(domain:gsap.com)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }

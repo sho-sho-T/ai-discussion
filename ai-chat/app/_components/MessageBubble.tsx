@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -8,7 +9,7 @@ interface MessageBubbleProps {
   message: Message
 }
 
-const MessageBubble = ({ message }: MessageBubbleProps) => {
+const MessageBubble = memo(({ message }: MessageBubbleProps) => {
   const agent = agents.find(a => a.id === message.agentId)
 
   if (!agent) return null
@@ -42,6 +43,8 @@ const MessageBubble = ({ message }: MessageBubbleProps) => {
       </div>
     </div>
   )
-}
+})
+
+MessageBubble.displayName = "MessageBubble"
 
 export default MessageBubble

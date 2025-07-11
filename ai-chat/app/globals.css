@@ -134,7 +134,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    font-family: 'Noto Sans JP', sans-serif;
+    font-family: "Noto Sans JP", sans-serif;
   }
   body {
     @apply text-foreground font-sans bg-gradient-to-br from-sky-50 to-violet-50 min-h-screen;
@@ -146,43 +146,50 @@
 
 @layer components {
   .glass-morphism {
-    @apply bg-white/25 backdrop-blur-lg border border-white/30 rounded-3xl shadow-2xl;
+    @apply bg-white/30 backdrop-blur-md border border-white/30 rounded-3xl shadow-xl;
   }
-  
+
   .agent-card-glass {
-    @apply bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-lg shadow-lg border border-white/50 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl;
+    @apply bg-gradient-to-br from-white/95 to-white/80 shadow-md border border-white/40 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg;
   }
-  
+
   .chat-input-glass {
-    @apply bg-white/95 border-2 border-transparent rounded-3xl shadow-lg relative overflow-hidden;
+    @apply bg-white/98 border-2 border-transparent rounded-3xl shadow-md relative overflow-hidden;
   }
-  
+
   .floating-orb {
     @apply absolute rounded-full pointer-events-none;
-    background: radial-gradient(circle, rgba(147, 197, 253, 0.4) 0%, rgba(196, 181, 253, 0.2) 100%);
-    filter: blur(40px);
+    background: radial-gradient(
+      circle,
+      rgba(147, 197, 253, 0.3) 0%,
+      rgba(196, 181, 253, 0.15) 100%
+    );
+    filter: blur(35px);
+    will-change: transform;
+    transform: translateZ(0);
   }
-  
+
   .pulse-dot {
     @apply inline-block w-2 h-2 rounded-full bg-blue-400;
+    animation: pulse-animation 1.5s ease-in-out infinite;
   }
-  
+
   .tag-badge {
     @apply inline-block px-3 py-1 rounded-xl text-xs font-medium shadow-md;
     background: linear-gradient(135deg, #fbbf24 0%, #fcd34d 100%);
     color: #92400e;
   }
-  
+
   .radio-custom {
     @apply w-5 h-5 border-2 border-violet-200 rounded-full appearance-none cursor-pointer transition-all duration-300 relative;
   }
-  
+
   .radio-custom:checked {
     @apply border-blue-400 bg-blue-400;
   }
-  
+
   .radio-custom:checked::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
@@ -198,8 +205,41 @@
   .animate-shimmer {
     animation: shimmer 3s infinite;
   }
+
+  .shimmer-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer-effect::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    transform: translateX(-100%);
+    animation: shimmer 2s infinite;
+  }
 }
 
 @keyframes shimmer {
-  100% { transform: translateX(200%); }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes pulse-animation {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.6;
+  }
 }

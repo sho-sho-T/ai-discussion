@@ -11,11 +11,18 @@
     "format": "biome format ./",
     "format:write": "biome format --write ./",
     "check": "biome check ./",
-    "check:write": "biome check --write ./"
+    "check:write": "biome check --write ./",
+    "dev:mastra": "npx mastra dev --dir mastra",
+    "build:mastra": "npx mastra build --dir mastra"
   },
   "dependencies": {
+    "@ai-sdk/google": "^1.2.22",
     "@google/generative-ai": "^0.24.1",
     "@gsap/react": "^2.1.2",
+    "@mastra/core": "^0.10.12",
+    "@mastra/libsql": "^0.11.0",
+    "@mastra/loggers": "^0.10.3",
+    "@mastra/memory": "^0.11.2",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-aspect-ratio": "^1.1.7",

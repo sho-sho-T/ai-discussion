@@ -1,11 +1,12 @@
-import { memo } from "react"
+import { memo, useRef } from "react"
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
 import type { Agent } from "../_types"
 
 interface AgentCardProps {
   agent: Agent
   isSelected: boolean
   onSelect: (agent: Agent) => void
-  onHover?: (element: HTMLElement, isHover: boolean) => void
   className?: string
 }
 
@@ -29,23 +30,59 @@ const AgentCard = memo(
     agent,
     isSelected,
     onSelect,
-    onHover,
     className = "",
   }: AgentCardProps) => {
-    const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-      onHover?.(e.currentTarget, true)
-    }
-
-    const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-      onHover?.(e.currentTarget, false)
-    }
+    const cardRef = useRef<HTMLDivElement>(null)
+    
+    const { contextSafe } = useGSAP(() => {
+      // 選択状態のアニメーション
+      gsap.to(cardRef.current, {
+        scale: isSelected ? 1.05 : 1,
+        boxShadow: isSelected 
+          ? "0 10px 30px rgba(59, 130, 246, 0.3)"
+          : "0 4px 20px rgba(0, 0, 0, 0.1)",
+        duration: 0.3,
+        ease: "power2.out"
+      })
+    }, { 
+      scope: cardRef,
+      dependencies: [isSelected] // 選択状態変更時に再実行
+    })
+    
+    // contextSafeでホバーアニメーション
+    const handleMouseEnter = contextSafe(() => {
+      if (!isSelected) {
+        gsap.to(cardRef.current, { 
+          y: -5, 
+          scale: 1.02,
+          duration: 0.2,
+          ease: "power2.out"
+        })
+      }
+    })
+    
+    const handleMouseLeave = contextSafe(() => {
+      if (!isSelected) {
+        gsap.to(cardRef.current, { 
+          y: 2, 
+          scale: 1,
+          duration: 0.2,
+          ease: "power2.out"
+        })
+      }
+    })
+    
+    const handleClick = contextSafe(() => {
+      onSelect(agent)
+    })
 
     return (
       <div
+        ref={cardRef}
         className={`agent-card-glass p-6 cursor-pointer ${
           isSelected ? "ring-2 ring-blue-400 ring-opacity-50" : ""
         } ${className}`}
-        onClick={() => onSelect(agent)}
+        onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >

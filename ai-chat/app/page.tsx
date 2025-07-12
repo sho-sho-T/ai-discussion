@@ -30,10 +30,10 @@ const Home = () => {
 
   const { contextSafe } = useGSAP(() => {
     // 初期アニメーション - セレクタ使用
-    gsap.set("#header > *", { opacity: 0, y: -20 })
-    gsap.set("#chatArea", { opacity: 0, y: 50, scale: 0.95 })
+    gsap.set("#header > *", { opacity: 0, y: -100 })
+    gsap.set("#chatArea", { opacity: 0, y: 30, scale: 1.2 })
     gsap.set("#startButton", { opacity: 0, y: 20 })
-    gsap.set(".agent-card", { opacity: 0, y: 30, scale: 0.9 })
+    gsap.set(".agent-card", { opacity: 0, y: 50, scale: 1.5 })
     
     // ページロードアニメーション
     const tl = gsap.timeline()

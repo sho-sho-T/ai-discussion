@@ -1,77 +1,104 @@
 "use client"
 
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap"
 import { useCallback, useRef, useState } from "react"
 import AgentCard from "./_components/AgentCard"
-import ChatInput from "./_components/ChatInput"
 import AnimatedButton from "./_components/AnimatedButton"
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
+import ChatInput from "./_components/ChatInput"
+import ChatSessionBoard from "./_components/ChatSession"
 import { useAgentSelection } from "./_hooks/useAgentSelection"
 import type { Agent, ChatSession, Message } from "./_types"
 import { agents } from "./agents"
-import ChatSessionBoard from "./_components/ChatSession"
 
 const Home = () => {
   const [question, setQuestion] = useState("")
   const [chatSession, setChatSession] = useState<ChatSession | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [currentTypingAgent, setCurrentTypingAgent] = useState<Agent | null>(null)
+  const [currentTypingAgent, setCurrentTypingAgent] = useState<Agent | null>(
+    null
+  )
 
   const containerRef = useRef<HTMLDivElement>(null)
   const { selectedAgents, selectAgent } = useAgentSelection(3)
 
-  const { contextSafe } = useGSAP(() => {
-    // 初期アニメーション - セレクタ使用
-    gsap.set("#header > *", { opacity: 0, y: -100 })
-    gsap.set("#chatArea", { opacity: 0, y: 30, scale: 1.2 })
-    gsap.set("#startButton", { opacity: 0, y: 20 })
-    gsap.set(".agent-card", { opacity: 0, y: 50, scale: 1.5 })
-    
-    // ページロードアニメーション
-    const tl = gsap.timeline()
-    tl.to("#header > *", { opacity: 1, y: 0, duration: 1, stagger: 0.2, ease: "power3.out" })
-      .to("#chatArea", { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" }, "-=0.5")
-      .to("#startButton", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.3")
-    
-    // エージェントカードアニメーション（1秒後）
-    gsap.to(".agent-card", { 
-      opacity: 1, 
-      y: 0, 
-      scale: 1,
-      duration: 0.6, 
-      stagger: 0.1,
-      ease: "back.out(1.7)",
-      delay: 1 
-    })
-  }, { scope: containerRef }) //スコープ設定
+  const { contextSafe } = useGSAP(
+    () => {
+      // 初期アニメーション - セレクタ使用
+      gsap.set("#header > *", { opacity: 0, y: -100 })
+      gsap.set("#chatArea", { opacity: 0, y: 30, scale: 1.2 })
+      gsap.set("#startButton", { opacity: 0, y: 20 })
+      gsap.set(".agent-card", { opacity: 0, y: 50, scale: 1.5 })
+
+      // ページロードアニメーション
+      const tl = gsap.timeline()
+      tl.to("#header > *", {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: "power3.out",
+      })
+        .to(
+          "#chatArea",
+          { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" },
+          "-=0.5"
+        )
+        .to(
+          "#startButton",
+          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+          "-=0.3"
+        )
+
+      // エージェントカードアニメーション（1秒後）
+      gsap.to(".agent-card", {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "back.out(1.7)",
+        delay: 1,
+      })
+    },
+    { scope: containerRef }
+  ) //スコープ設定
 
   // contextSafeでイベントハンドラ作成
   const handleStartDiscussion = contextSafe(async () => {
     await gsap.to("#startButton", { scale: 0.95, duration: 0.1 })
     gsap.to("#startButton", { scale: 1, duration: 0.2, ease: "back.out(1.7)" })
-    
+
     // 画面遷移アニメーション
     const tl = gsap.timeline()
-    tl.to("#chatArea", { 
-      opacity: 0, 
-      scale: 0.95, 
-      duration: 0.5, 
-      ease: "power2.inOut" 
+    tl.to("#chatArea", {
+      opacity: 0,
+      scale: 0.95,
+      duration: 0.5,
+      ease: "power2.inOut",
     })
-    .to("#agentGrid .agent-card", { 
-      opacity: 0, 
-      y: -20, 
-      duration: 0.3, 
-      stagger: 0.05, 
-      ease: "power2.inOut" 
-    }, "-=0.3")
-    .to("#startButton", { 
-      opacity: 0, 
-      y: 20, 
-      duration: 0.3, 
-      ease: "power2.inOut" 
-    }, "-=0.2")
-    
+      .to(
+        "#agentGrid .agent-card",
+        {
+          opacity: 0,
+          y: -20,
+          duration: 0.3,
+          stagger: 0.05,
+          ease: "power2.inOut",
+        },
+        "-=0.3"
+      )
+      .to(
+        "#startButton",
+        {
+          opacity: 0,
+          y: 20,
+          duration: 0.3,
+          ease: "power2.inOut",
+        },
+        "-=0.2"
+      )
+
     await new Promise(resolve => setTimeout(resolve, 500))
     await startDiscussion()
   })
@@ -111,13 +138,16 @@ const Home = () => {
         try {
           const response = await fetch("/api/chat", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "x-session-id": session.id,
+            },
             body: JSON.stringify({
               question: session.question,
               selectedAgentIds: [agent.id],
               messages: session.messages,
               round,
-              useMockData: true,
+              useMockData: false, // Mastraエージェントを使用
               generateSummary: round === 3,
             }),
           })
@@ -165,32 +195,40 @@ const Home = () => {
     setChatSession(null)
     setQuestion("")
     setCurrentTypingAgent(null)
-    
+
     // ホーム画面の要素を再表示するアニメーション
     setTimeout(() => {
       const tl = gsap.timeline()
       tl.set("#chatArea", { opacity: 0, scale: 0.9 })
         .set(".agent-card", { opacity: 0, y: 20 })
         .set("#startButton", { opacity: 0, y: 20 })
-        .to("#chatArea", { 
-          opacity: 1, 
-          scale: 1, 
-          duration: 0.6, 
-          ease: "back.out(1.7)" 
+        .to("#chatArea", {
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+          ease: "back.out(1.7)",
         })
-        .to(".agent-card", { 
-          opacity: 1, 
-          y: 0, 
-          duration: 0.4, 
-          stagger: 0.1, 
-          ease: "back.out(1.7)" 
-        }, "-=0.3")
-        .to("#startButton", { 
-          opacity: 1, 
-          y: 0, 
-          duration: 0.4, 
-          ease: "back.out(1.7)" 
-        }, "-=0.2")
+        .to(
+          ".agent-card",
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            stagger: 0.1,
+            ease: "back.out(1.7)",
+          },
+          "-=0.3"
+        )
+        .to(
+          "#startButton",
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            ease: "back.out(1.7)",
+          },
+          "-=0.2"
+        )
     }, 100)
   }, [])
 

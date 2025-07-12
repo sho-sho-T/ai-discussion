@@ -1,8 +1,8 @@
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap"
 import { memo, useRef } from "react"
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
+import { Checkbox } from "@/components/ui/checkbox"
 import type { Agent } from "../_types"
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface AgentCardProps {
   agent: Agent
@@ -27,49 +27,47 @@ const agentStyles: Record<string, string> = {
 }
 
 const AgentCard = memo(
-  ({
-    agent,
-    isSelected,
-    onSelect,
-    className = "",
-  }: AgentCardProps) => {
+  ({ agent, isSelected, onSelect, className = "" }: AgentCardProps) => {
     const cardRef = useRef<HTMLDivElement>(null)
-    
-    const { contextSafe } = useGSAP(() => {
-      // 選択状態のアニメーション
-      gsap.to(cardRef.current, {
-        scale: isSelected ? 1.05 : 1,
-        duration: 0.2,
-        ease: "power1.out"
-      })
-    }, { 
-      scope: cardRef,
-      dependencies: [isSelected] // 選択状態変更時に再実行
-    })
-    
+
+    const { contextSafe } = useGSAP(
+      () => {
+        // 選択状態のアニメーション
+        gsap.to(cardRef.current, {
+          scale: isSelected ? 1.05 : 1,
+          duration: 0.2,
+          ease: "power1.out",
+        })
+      },
+      {
+        scope: cardRef,
+        dependencies: [isSelected], // 選択状態変更時に再実行
+      }
+    )
+
     // contextSafeでホバーアニメーション
     const handleMouseEnter = contextSafe(() => {
       if (!isSelected) {
-        gsap.to(cardRef.current, { 
-          y: -2, 
+        gsap.to(cardRef.current, {
+          y: -2,
           scale: 1.03,
           duration: 0.15,
-          ease: "power1.out"
+          ease: "power1.out",
         })
       }
     })
-    
+
     const handleMouseLeave = contextSafe(() => {
       if (!isSelected) {
-        gsap.to(cardRef.current, { 
-          y: 2, 
+        gsap.to(cardRef.current, {
+          y: 2,
           scale: 1,
           duration: 0.2,
-          ease: "power2.out"
+          ease: "power2.out",
         })
       }
     })
-    
+
     const handleClick = contextSafe(() => {
       onSelect(agent)
     })
@@ -97,10 +95,7 @@ const AgentCard = memo(
               {agent.description}
             </h3>
           </div>
-          <Checkbox
-            checked={isSelected}
-            onChange={() => {}}
-          />
+          <Checkbox checked={isSelected} onChange={() => {}} />
         </div>
         <p className="text-sm text-gray-600 leading-relaxed">
           {agent.personality}

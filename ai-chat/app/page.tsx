@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,58 +12,55 @@ import {
 } from "@/components/ui/card"
 import AgentCard from "./_components/AgentCard"
 import MessageBubble from "./_components/MessageBubble"
-import { useGSAP } from "./_hooks/useGSAP"
+import ChatInput from "./_components/ChatInput"
+import AnimatedButton from "./_components/AnimatedButton"
+import { useGSAP } from '@gsap/react';
+import gsap from 'gsap';
+import { useAgentSelection } from "./_hooks/useAgentSelection"
 import type { Agent, ChatSession, Message } from "./_types"
 import { agents } from "./agents"
 
 const Home = () => {
-  const [selectedAgents, setSelectedAgents] = useState<Agent[]>([])
   const [question, setQuestion] = useState("")
   const [chatSession, setChatSession] = useState<ChatSession | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const questionInputRef = useRef<HTMLTextAreaElement>(null)
-  const startButtonRef = useRef<HTMLButtonElement>(null)
-  const gsapAnimations = useGSAP()
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { selectedAgents, selectAgent } = useAgentSelection(3)
 
-  useEffect(() => {
-    gsapAnimations.animatePageLoad()
-
-    const timer = setTimeout(() => {
-      gsapAnimations.animateAgentCards()
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleAgentSelect = useCallback((agent: Agent) => {
-    setSelectedAgents(prev => {
-      const isSelected = prev.some(a => a.id === agent.id)
-      if (isSelected) {
-        return prev.filter(a => a.id !== agent.id)
-      }
-      if (prev.length < 3) {
-        return [...prev, agent]
-      }
-      return prev
+  const { contextSafe } = useGSAP(() => {
+    // 初期アニメーション - セレクタ使用
+    gsap.set("#header > *", { opacity: 0, y: -20 })
+    gsap.set("#chatArea", { opacity: 0, y: 50, scale: 0.95 })
+    gsap.set("#startButton", { opacity: 0, y: 20 })
+    gsap.set(".agent-card", { opacity: 0, y: 30, scale: 0.9 })
+    
+    // ページロードアニメーション
+    const tl = gsap.timeline()
+    tl.to("#header > *", { opacity: 1, y: 0, duration: 1, stagger: 0.2, ease: "power3.out" })
+      .to("#chatArea", { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" }, "-=0.5")
+      .to("#startButton", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.3")
+    
+    // エージェントカードアニメーション（1秒後）
+    gsap.to(".agent-card", { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      duration: 0.6, 
+      stagger: 0.1,
+      ease: "back.out(1.7)",
+      delay: 1 
     })
-  }, [])
+  }, { scope: containerRef }) //スコープ設定
 
-  const handleAgentCardHover = useCallback(
-    (element: HTMLElement, isHover: boolean) => {
-      gsapAnimations.animateCardHover(element, isHover)
-    },
-    [gsapAnimations]
-  )
-
-  const handleAgentCardSelect = useCallback(
-    (agent: Agent, element: HTMLElement) => {
-      const isSelected = selectedAgents.some(a => a.id === agent.id)
-      handleAgentSelect(agent)
-      gsapAnimations.animateAgentSelection(element, !isSelected)
-    },
-    [selectedAgents, handleAgentSelect, gsapAnimations]
-  )
+  // contextSafeでイベントハンドラ作成
+  const handleStartDiscussion = contextSafe(async () => {
+    await gsap.to("#startButton", { scale: 0.95, duration: 0.1 })
+    gsap.to("#startButton", { scale: 1, duration: 0.2, ease: "back.out(1.7)" })
+    
+    await new Promise(resolve => setTimeout(resolve, 200))
+    await startDiscussion()
+  })
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array]
@@ -72,15 +69,6 @@ const Home = () => {
       ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
     return shuffled
-  }
-
-  const handleStartDiscussion = async () => {
-    if (startButtonRef.current) {
-      gsapAnimations.animateButtonPress(startButtonRef.current)
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 200))
-    startDiscussion()
   }
 
   const startDiscussion = async () => {
@@ -153,16 +141,10 @@ const Home = () => {
   const resetChat = useCallback(() => {
     setChatSession(null)
     setQuestion("")
-    setSelectedAgents([])
   }, [])
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Floating Orbs */}
-      <div className="floating-orb w-[300px] h-[300px] -top-[100px] -left-[100px]" />
-      <div className="floating-orb w-[400px] h-[400px] -bottom-[200px] -right-[200px]" />
-      <div className="floating-orb w-[250px] h-[250px] top-[50%] left-[70%]" />
-
+    <div ref={containerRef} className="min-h-screen relative overflow-hidden">
       {/* Header */}
       <header className="relative z-10 text-center py-12" id="header">
         <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-3 opacity-0">
@@ -203,71 +185,17 @@ const Home = () => {
               </p>
 
               {/* Chat Input */}
-              <div className="chat-input-glass rounded-3xl p-6 mb-10 shadow-lg">
-                <textarea
-                  ref={questionInputRef}
-                  value={question}
-                  onChange={e => setQuestion(e.target.value)}
-                  onFocus={() =>
-                    gsapAnimations.animateInputFocus(
-                      questionInputRef.current!,
-                      true
-                    )
-                  }
-                  onBlur={() =>
-                    gsapAnimations.animateInputFocus(
-                      questionInputRef.current!,
-                      false
-                    )
-                  }
-                  placeholder="AIエージェントに相談したいことを入力してください..."
-                  className="w-full bg-transparent outline-none resize-none text-gray-700 placeholder-gray-400"
-                  rows={3}
-                />
-                <div className="flex justify-between items-center mt-4">
-                  <div className="flex gap-3">
-                    <button className="text-gray-400 hover:text-blue-500 transition-colors">
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                        />
-                      </svg>
-                    </button>
-                    <button className="text-gray-400 hover:text-blue-500 transition-colors">
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                  <span className="text-sm text-gray-400">
-                    {question.length} / 1000
-                  </span>
-                </div>
-              </div>
+              <ChatInput
+                value={question}
+                onChange={setQuestion}
+                placeholder="AIエージェントに相談したいことを入力してください..."
+              />
 
               {/* Agent Selection */}
               <div className="mb-8">
                 <p className="text-gray-700 font-medium mb-6 flex items-center gap-2">
                   エージェントを選択してください
-                  <span className="text-sm text-gray-500">(1-3体)</span>
+                  <span className="text-sm text-gray-500">(1-3人)</span>
                 </p>
 
                 <div
@@ -279,9 +207,8 @@ const Home = () => {
                       key={agent.id}
                       agent={agent}
                       isSelected={selectedAgents.some(a => a.id === agent.id)}
-                      onSelect={handleAgentSelect}
-                      onHover={handleAgentCardHover}
-                      className="agent-card gsap-stagger"
+                      onSelect={selectAgent}
+                      className="agent-card"
                     />
                   ))}
                 </div>
@@ -291,34 +218,31 @@ const Home = () => {
             {/* Start Discussion Button */}
             <div className="fixed bottom-0 left-0 right-0 p-6 glass-morphism">
               <div className="container mx-auto max-w-6xl">
-                <button
-                  ref={startButtonRef}
-                  onClick={handleStartDiscussion}
+                <AnimatedButton
+                  onPress={startDiscussion}
                   disabled={
                     !question.trim() || selectedAgents.length === 0 || isLoading
                   }
-                  className="w-full md:w-auto mx-auto block px-12 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed opacity-0"
+                  className="w-full md:w-auto mx-auto block opacity-0"
                   id="startButton"
                 >
-                  <span className="flex items-center justify-center gap-3">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
-                    {isLoading
-                      ? "ディスカッション開始中..."
-                      : "ディスカッションを開始する"}
-                  </span>
-                </button>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  {isLoading
+                    ? "ディスカッション開始中..."
+                    : "ディスカッションを開始する"}
+                </AnimatedButton>
               </div>
             </div>
           </>

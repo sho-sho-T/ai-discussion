@@ -109,7 +109,7 @@ const ChatSession = memo(({
           {/* 質問エリア */}
           <div ref={headerRef} className="glass-morphism rounded-3xl p-6 shadow-2xl">
             <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <AiOutlineQuestionCircle size={25}/>
+              <AiOutlineQuestionCircle color="blue" size={20}/>
               あなたの質問
             </h2>
             <div className="bg-white/50 rounded-xl p-4">
@@ -122,9 +122,9 @@ const ChatSession = memo(({
           {/* 最終結論エリア */}
           {chatSession.status === "completed" && chatSession.finalSummary && (
             <div className="glass-morphism rounded-3xl p-6 shadow-2xl">
-              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
                 <div className="w-5 h-5 text-gray-800 rounded-full flex items-center justify-center">
-                  <FaRegCircleCheck size={25}/>
+                  <FaRegCircleCheck color="blue" size={25}/>
                 </div>
                 結論
               </h3>

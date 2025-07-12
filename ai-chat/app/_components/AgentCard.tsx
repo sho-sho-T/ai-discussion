@@ -2,6 +2,7 @@ import { memo, useRef } from "react"
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import type { Agent } from "../_types"
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface AgentCardProps {
   agent: Agent
@@ -38,11 +39,8 @@ const AgentCard = memo(
       // 選択状態のアニメーション
       gsap.to(cardRef.current, {
         scale: isSelected ? 1.05 : 1,
-        boxShadow: isSelected 
-          ? "0 10px 30px rgba(59, 130, 246, 0.3)"
-          : "0 4px 20px rgba(0, 0, 0, 0.1)",
-        duration: 0.3,
-        ease: "power2.out"
+        duration: 0.2,
+        ease: "power1.out"
       })
     }, { 
       scope: cardRef,
@@ -53,10 +51,10 @@ const AgentCard = memo(
     const handleMouseEnter = contextSafe(() => {
       if (!isSelected) {
         gsap.to(cardRef.current, { 
-          y: -5, 
-          scale: 1.02,
-          duration: 0.2,
-          ease: "power2.out"
+          y: -2, 
+          scale: 1.03,
+          duration: 0.15,
+          ease: "power1.out"
         })
       }
     })
@@ -99,9 +97,7 @@ const AgentCard = memo(
               {agent.description}
             </h3>
           </div>
-          <input
-            type="checkbox"
-            className="radio-custom"
+          <Checkbox
             checked={isSelected}
             onChange={() => {}}
           />

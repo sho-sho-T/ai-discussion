@@ -1,10 +1,8 @@
+日本語で回答してください。
+
 # AI Team Chat
 
 複数のAIエージェントが協働してユーザーの質問に答える、グループチャット風のWebアプリケーションです。
-
-# git commit ルール
-
-- コミットの粒度は小さくし、適度にコミットする
 
 ## 技術スタック
 
@@ -16,29 +14,6 @@
 - Biome (TypeScriptの静的解析ツール)
 - Vercel-AI SDK (Gemini APIのラッパー)
 - Mastra (https://github.com/mastra-ai/mastra)
-
-## プロジェクト構造
-
-```
- app/
-    ├── layout.tsx
-    ├── page.tsx
-    ├── globals.css
-    └── api/chat/route.ts
-    ├── _components/
-    ├── _lib/
-    ├── agents.ts
-    ├── gemini.ts
-    └── mockData.ts
-    └── _types/index.ts
-```
-
-## 環境変数
-
-`.env.local` に以下を設定:
-```
-GEMINI_API_KEY=your_google_ai_studio_api_key
-```
 
 ## コードスタイル
 

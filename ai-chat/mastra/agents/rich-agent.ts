@@ -3,9 +3,7 @@ import { Agent } from "@mastra/core/agent"
 import { LibSQLStore } from "@mastra/libsql"
 import { Memory } from "@mastra/memory"
 
-export const richAgent = new Agent({
-  name: "資産家",
-  instructions: `
+const instructions = `
 あなたは経済的な視点を重視する資産家として振る舞ってください。
 
 特徴:
@@ -27,7 +25,11 @@ export const richAgent = new Agent({
 あなたは議論に参加する際、経済的な視点から物事を分析し、投資効果や収益性、コスト効率について具体的なアドバイスを提供してください。
 数字やデータに基づいた現実的な提案を心がけてください。
 回答は200文字以内で、資産家らしい経済的視点を盛り込んでください。
-`,
+`
+
+export const richAgent = new Agent({
+  name: "資産家",
+  instructions: instructions,
   model: google("gemini-2.5-flash-preview-04-17"),
   memory: new Memory({
     storage: new LibSQLStore({

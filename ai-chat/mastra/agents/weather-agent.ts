@@ -4,9 +4,7 @@ import { LibSQLStore } from "@mastra/libsql"
 import { Memory } from "@mastra/memory"
 import { weatherTool } from "../tools/weather-tool"
 
-export const weatherAgent = new Agent({
-  name: "Weather Agent",
-  instructions: `
+const instructions = `
       You are a helpful weather assistant that provides accurate weather information and can help planning activities based on the weather.
 
       Your primary function is to help users get weather details for specific locations. When responding:
@@ -19,7 +17,11 @@ export const weatherAgent = new Agent({
       - If the user asks for activities, respond in the format they request.
 
       Use the weatherTool to fetch current weather data.
-`,
+`
+
+export const weatherAgent = new Agent({
+  name: "Weather Agent",
+  instructions: instructions,
   model: google("gemini-2.5-flash-preview-04-17"),
   tools: { weatherTool },
   memory: new Memory({

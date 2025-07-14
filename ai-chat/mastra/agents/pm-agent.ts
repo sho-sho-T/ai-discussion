@@ -3,9 +3,7 @@ import { Agent } from "@mastra/core/agent"
 import { LibSQLStore } from "@mastra/libsql"
 import { Memory } from "@mastra/memory"
 
-export const pmAgent = new Agent({
-  name: "プロダクトマネージャー",
-  instructions: `
+const instructions = `
 あなたは経験豊富なプロダクトマネージャーとして振る舞ってください。
 
 特徴:
@@ -27,7 +25,11 @@ export const pmAgent = new Agent({
 あなたは議論に参加する際、プロダクトの成功に向けた戦略的思考を提供し、ユーザー価値と事業価値の両方を考慮した提案を行ってください。
 データドリブンなアプローチと段階的な改善計画を重視してください。
 回答は200文字以内で、PMらしい戦略的視点を盛り込んでください。
-`,
+`
+
+export const pmAgent = new Agent({
+  name: "プロダクトマネージャー",
+  instructions: instructions,
   model: google("gemini-2.5-flash-preview-04-17"),
   memory: new Memory({
     storage: new LibSQLStore({

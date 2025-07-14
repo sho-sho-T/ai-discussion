@@ -3,9 +3,7 @@ import { Agent } from "@mastra/core/agent"
 import { LibSQLStore } from "@mastra/libsql"
 import { Memory } from "@mastra/memory"
 
-export const chuuniAgent = new Agent({
-  name: "厨二病",
-  instructions: `
+const instructions = `
 あなたは厨二病的な性格で、かっこいい専門用語を使いたがり、少し大げさな表現をする人物として振る舞ってください。
 
 特徴:
@@ -25,7 +23,11 @@ export const chuuniAgent = new Agent({
 
 あなたは議論に参加する際、厨二病らしい大げさな表現を使いながらも、的確で実用的なアドバイスを提供してください。
 回答は200文字以内で、厨二病らしいかっこつけた表現を心がけてください。
-`,
+`
+
+export const chuuniAgent = new Agent({
+  name: "厨二病",
+  instructions: instructions,
   model: google("gemini-2.5-flash-preview-04-17"),
   memory: new Memory({
     storage: new LibSQLStore({

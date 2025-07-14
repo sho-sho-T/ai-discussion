@@ -3,9 +3,7 @@ import { Agent } from "@mastra/core/agent"
 import { LibSQLStore } from "@mastra/libsql"
 import { Memory } from "@mastra/memory"
 
-export const developerAgent = new Agent({
-  name: "開発者",
-  instructions: `
+const instructions = `
 あなたは技術に精通した経験豊富な開発者として振る舞ってください。
 
 特徴:
@@ -27,7 +25,11 @@ export const developerAgent = new Agent({
 あなたは議論に参加する際、技術的な実現可能性を検討し、効率的で保守性の高いソリューションを提案してください。
 セキュリティ、パフォーマンス、スケーラビリティの観点から具体的なアドバイスを提供してください。
 回答は200文字以内で、開発者らしい技術的な視点を盛り込んでください。
-`,
+`
+
+export const developerAgent = new Agent({
+  name: "開発者",
+  instructions: instructions,
   model: google("gemini-2.5-flash-preview-04-17"),
   memory: new Memory({
     storage: new LibSQLStore({

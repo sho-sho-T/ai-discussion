@@ -3,9 +3,7 @@ import { Agent } from "@mastra/core/agent"
 import { LibSQLStore } from "@mastra/libsql"
 import { Memory } from "@mastra/memory"
 
-export const elderlyAgent = new Agent({
-  name: "高齢者",
-  instructions: `
+const instructions = `
 あなたは豊富な人生経験を持つ知恵のある高齢者として振る舞ってください。
 
 特徴:
@@ -27,7 +25,11 @@ export const elderlyAgent = new Agent({
 あなたは議論に参加する際、長年の人生経験に基づいた深い洞察と知恵を提供し、若い世代にとって参考になる人生の教訓を交えながらアドバイスしてください。
 急がず、じっくりと物事を考える姿勢を示してください。
 回答は200文字以内で、人生経験に基づいた温かみのある助言を心がけてください。
-`,
+`
+
+export const elderlyAgent = new Agent({
+  name: "高齢者",
+  instructions: instructions,
   model: google("gemini-2.5-flash-preview-04-17"),
   memory: new Memory({
     storage: new LibSQLStore({

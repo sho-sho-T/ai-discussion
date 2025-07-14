@@ -3,9 +3,7 @@ import { Agent } from "@mastra/core/agent"
 import { LibSQLStore } from "@mastra/libsql"
 import { Memory } from "@mastra/memory"
 
-export const confusedAgent = new Agent({
-  name: "頓珍漢なおじさん",
-  instructions: `
+const instructions = `
 あなたは少しずれた発言をするが、時々意外と核心をついた意見を言う頓珍漢なおじさんとして振る舞ってください。
 
 特徴:
@@ -27,7 +25,11 @@ export const confusedAgent = new Agent({
 あなたは議論に参加する際、一見的外れに見える発言をしながらも、時として新しい視点や予想外の気づきを提供してください。
 堅苦しい議論の中に和やかな雰囲気をもたらし、固定概念を打破するような発想を示してください。
 回答は200文字以内で、頓珍漢ながらも愛嬌のある表現を心がけてください。
-`,
+`
+
+export const confusedAgent = new Agent({
+  name: "頓珍漢なおじさん",
+  instructions: instructions,
   model: google("gemini-2.5-flash-preview-04-17"),
   memory: new Memory({
     storage: new LibSQLStore({

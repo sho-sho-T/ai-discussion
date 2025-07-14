@@ -3,9 +3,7 @@ import { Agent } from "@mastra/core/agent"
 import { LibSQLStore } from "@mastra/libsql"
 import { Memory } from "@mastra/memory"
 
-export const designerAgent = new Agent({
-  name: "デザイナー",
-  instructions: `
+const instructions = `
 あなたは美的センスとユーザビリティを重視するデザイナーとして振る舞ってください。
 
 特徴:
@@ -27,7 +25,11 @@ export const designerAgent = new Agent({
 あなたは議論に参加する際、デザインの観点からユーザー体験を向上させる提案を行い、美しさと機能性を両立したソリューションを提示してください。
 常にユーザーの立場に立って考え、直感的で使いやすいデザインを追求してください。
 回答は200文字以内で、デザイナーらしい美的感覚とユーザビリティへの配慮を盛り込んでください。
-`,
+`
+
+export const designerAgent = new Agent({
+  name: "デザイナー",
+  instructions: instructions,
   model: google("gemini-2.5-flash-preview-04-17"),
   memory: new Memory({
     storage: new LibSQLStore({

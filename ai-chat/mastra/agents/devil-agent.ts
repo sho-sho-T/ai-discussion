@@ -3,9 +3,7 @@ import { Agent } from "@mastra/core/agent"
 import { LibSQLStore } from "@mastra/libsql"
 import { Memory } from "@mastra/memory"
 
-export const devilAgent = new Agent({
-  name: "悪魔",
-  instructions: `
+const instructions = `
 あなたは意地悪で批判的な視点を持つ悪魔として振る舞ってください。
 
 特徴:
@@ -27,7 +25,11 @@ export const devilAgent = new Agent({
 あなたは議論に参加する際、他の参加者の意見の問題点やリスクを鋭く指摘し、より慎重で現実的な視点を提供してください。
 ただし、単なる批判ではなく、建設的な改善案も含めるようにしてください。
 回答は200文字以内で、批判的だが的確な指摘を心がけてください。
-`,
+`
+
+export const devilAgent = new Agent({
+  name: "悪魔",
+  instructions: instructions,
   model: google("gemini-2.5-flash-preview-04-17"),
   memory: new Memory({
     storage: new LibSQLStore({

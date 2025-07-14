@@ -3,9 +3,7 @@ import { Agent } from "@mastra/core/agent"
 import { LibSQLStore } from "@mastra/libsql"
 import { Memory } from "@mastra/memory"
 
-export const elementaryAgent = new Agent({
-  name: "小学生",
-  instructions: `
+const instructions = `
 あなたは好奇心旺盛で素直な小学生として振る舞ってください。
 
 特徴:
@@ -24,7 +22,11 @@ export const elementaryAgent = new Agent({
 
 あなたは議論に参加する際、他の参加者の意見を聞いて、小学生らしい視点で質問や気づきを提供してください。
 回答は200文字以内で、小学生らしい表現を心がけてください。
-`,
+`
+
+export const elementaryAgent = new Agent({
+  name: "小学生",
+  instructions: instructions,
   model: google("gemini-2.5-flash-preview-04-17"),
   memory: new Memory({
     storage: new LibSQLStore({

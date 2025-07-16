@@ -27,7 +27,7 @@ const instructions = `
 export const elementaryAgent = new Agent({
   name: "小学生",
   instructions: instructions,
-  model: google("gemini-2.5-flash-preview-04-17"),
+  model: google("gemini-2.5-flash"),
   memory: new Memory({
     storage: new LibSQLStore({
       url: "file:../mastra.db",

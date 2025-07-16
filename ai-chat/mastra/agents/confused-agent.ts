@@ -30,7 +30,7 @@ const instructions = `
 export const confusedAgent = new Agent({
   name: "頓珍漢なおじさん",
   instructions: instructions,
-  model: google("gemini-2.5-flash-preview-04-17"),
+  model: google("gemini-2.5-flash"),
   memory: new Memory({
     storage: new LibSQLStore({
       url: "file:../mastra.db",

@@ -22,7 +22,7 @@ const instructions = `
 export const weatherAgent = new Agent({
   name: "Weather Agent",
   instructions: instructions,
-  model: google("gemini-2.5-flash-preview-04-17"),
+  model: google("gemini-2.5-flash"),
   tools: { weatherTool },
   memory: new Memory({
     storage: new LibSQLStore({
